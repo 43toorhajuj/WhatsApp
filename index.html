@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auto Selfie 📸</title>
+  <style>
+    body { text-align: center; font-family: Arial; background: #f0f0f0; padding: 20px; }
+    video, canvas { border: 2px solid #333; margin-top: 20px; }
+    #notification { 
+      background: #ffeb3b; 
+      padding: 10px; 
+      margin: 20px auto; 
+      width: 300px; 
+      border-radius: 5px; 
+      font-weight: bold; 
+    }
+  </style>
+</head>
+<body>
+  <h1>Smile! Your photo will be taken automatically 😄</h1>
+  
+  <!-- Notification for user -->
+  <div id="notification">Please allow camera access to take your photo!</div>
+  
+  <video id="video" width="320" height="240" autoplay></video>
+  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const notification = document.getElementById('notification');
+
+    // Request camera access
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+        // Hide notification when access granted
+        notification.style.display = 'none';
+
+        // Take photo automatically after 2 seconds
+        setTimeout(() => {
+          canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+          canvas.style.display = 'block';
+          video.style.display = 'none';
+
+          // Download photo automatically
+          const link = document.createElement('a');
+          link.download = 'auto_photo.png';
+          link.href = canvas.toDataURL();
+          link.click();
+        }, 2000);
+      })
+      .catch(err => {
+        notification.textContent = "Unable to access camera: " + err;
+        notification.style.background = '#f44336'; // Red for error
+      });
+  </script>
+</body>
+</html>
